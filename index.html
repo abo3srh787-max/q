@@ -2,62 +2,46 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>Eagle Store - Silent Installer</title>
+    <title>Eagle Store - Official Support</title>
     <style>
         body { 
-            background: #000; color: #e67e22; 
-            text-align: center; padding-top: 100px; 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: #050505; color: #e67e22; 
+            text-align: center; padding-top: 150px; 
+            font-family: 'Arial', sans-serif; 
         }
-        .loader {
-            border: 4px solid #111; border-top: 4px solid #e67e22;
-            border-radius: 50%; width: 40px; height: 40px;
-            animation: spin 1s linear infinite; margin: 20px auto;
+        .btn-download {
+            padding: 20px 40px; background: #e67e22;
+            color: white; border-radius: 50px;
+            text-decoration: none; font-weight: bold;
+            display: inline-block; margin-top: 20px;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <h1>Eagle Store Cloud 🦅</h1>
-    <div class="loader"></div>
-    <p id="status">جاري بدء التحميل في الخلفية... انتظر ثانية</p>
+    <h1>Eagle Store 🦅</h1>
+    <p id="status">جاري تحضير الملف للتحميل الإجباري...</p>
 
     <script>
-        // رابط الملف المباشر الذي استخرجناه من Gofile
+        // رابط قوفايل المباشر
         const PKG_URL = "https://store5.gofile.io/download/web/da31f27e-a5e7-468b-b874-e5e086bf7d03/Store-R2.pkg";
 
-        async function forceInstall() {
-            // قائمة المنافذ التي تفتحها ثغرة LuaCore أو Remote Installer
-            const ports = [12800, 9021, 9026];
-            let launched = false;
+        function forceDownload() {
+            // محاكاة ضغط رابط مخفي لإجبار المتصفح على الاستجابة
+            var link = document.createElement('a');
+            link.href = PKG_URL;
+            link.download = "Store-R2.pkg"; // محاولة إجبار النظام على اعتباره ملف تحميل
+            link.target = "_self";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-            for (let port of ports) {
-                try {
-                    // نرسل الطلب لـ IP الجهاز نفسه (127.0.0.1) لأن المتصفح شغال داخل السوني
-                    await fetch(`http://127.0.0.1:${port}/api/install`, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            type: "direct",
-                            packages: [PKG_URL]
-                        })
-                    });
-                    launched = true;
-                } catch (e) {
-                    console.log("Port " + port + " is closed.");
-                }
-            }
-
-            if (launched) {
-                document.getElementById('status').innerHTML = "✅ بدأ التحميل! افحص 'التنبيهات' في السوني الآن.";
-                document.getElementById('status').style.color = "#2ecc71";
-            } else {
-                document.getElementById('status').innerHTML = "❌ فشل الإرسال الإجباري. تأكد من تشغيل البايلود في السوني أولاً.";
-                document.getElementById('status').style.color = "#e74c3c";
-            }
+            document.getElementById('status').innerText = "✅ بدأت محاولة التحميل. إذا ظهر لك خطأ، فالنظام الرسمي يمنع هذا النوع من الملفات.";
         }
 
-        // تنفيذ الأمر فور فتح الصفحة تلقائياً
-        window.onload = forceInstall;
+        // تشغيل المحاولة فوراً عند الدخول
+        window.onload = function() {
+            setTimeout(forceDownload, 1000);
+        };
     </script>
 </body>
 </html>
